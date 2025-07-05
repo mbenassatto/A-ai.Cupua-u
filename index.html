@@ -18,7 +18,7 @@
       margin: 10px 0;
       font-size: 16px;
     }
-    .mensagem {
+    .mensagem, .pagamento {
       margin-top: 20px;
       background-color: #e0ffe0;
       padding: 10px;
@@ -49,8 +49,10 @@
   </select><br>
 
   <button onclick="adicionarPedido()">Adicionar ao pedido</button>
+  <button onclick="finalizarPedido()">Finalizar Pedido</button>
 
   <div class="mensagem" id="mensagem"></div>
+  <div class="pagamento" id="pagamento" style="display: none;"></div>
 
   <footer>
     Site desenvolvido por Miguel Stenke.
@@ -101,14 +103,32 @@
       const valor = precos[sabor][tamanho];
       pedidos.push({ sabor, tamanho, valor });
 
-      let texto = pedidos.map((p, i) =>
+      atualizarMensagem();
+    }
+
+    function atualizarMensagem() {
+      const mensagem = document.getElementById('mensagem');
+      const total = pedidos.reduce((soma, p) => soma + p.valor, 0);
+      const texto = pedidos.map((p, i) =>
         `Pedido ${i + 1}: sabor ${p.sabor}, tamanho ${p.tamanho}, valor R$ ${p.valor.toFixed(2)}`
-      ).join('\n');
+      ).join('\n') + `\n\nTotal parcial: R$ ${total.toFixed(2)}`;
+
+      mensagem.innerText = texto;
+    }
+
+    function finalizarPedido() {
+      if (pedidos.length === 0) {
+        alert('Adicione pelo menos um item ao pedido antes de finalizar.');
+        return;
+      }
 
       const total = pedidos.reduce((soma, p) => soma + p.valor, 0);
-      texto += `\n\nTotal: R$ ${total.toFixed(2)}`;
+      const pagamento = document.getElementById('pagamento');
 
-      document.getElementById('mensagem').innerText = texto;
+      const textoFinal = `✅ Pedido concluído com sucesso!\n\nTotal a pagar: R$ ${total.toFixed(2)}\n\nFormas de pagamento disponíveis:\n- PIX\n- Cartão de Crédito\n- Cartão de Débito\n- Dinheiro`;
+
+      pagamento.innerText = textoFinal;
+      pagamento.style.display = 'block';
     }
   </script>
 
