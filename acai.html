@@ -1,0 +1,63 @@
+# CÓDIGO DE ENTRADA 
+
+# Mensagem de boas-vindas
+print("Bem-vindo ao sistema de pedidos da loja de Açaí e Cupuaçu!")
+print("Desenvolvido por Miguel Stenke Ramos Benassatto\n")
+
+# Variável acumuladora do valor total dos pedidos
+total_pedido = 0
+
+# Início do loop principal de pedidos
+while True:
+    # Input do sabor
+    sabor = input("Escolha o sabor (CP para Cupuaçu / AC para Açaí): ").upper()
+
+    # Validação do sabor
+    if sabor != "CP" and sabor != "AC":
+        print("Sabor inválido. Tente novamente.\n")
+        continue  # Continua para reiniciar a solicitação do sabor
+
+    # Input do tamanho
+    tamanho = input("Escolha o tamanho (P / M / G): ").upper()
+
+    # Validação do tamanho
+    if tamanho != "P" and tamanho != "M" and tamanho != "G":
+        print("Tamanho inválido. Tente novamente.\n")
+        continue  # Continua para reiniciar a solicitação do tamanho
+
+    # Determinação do preço com estrutura aninhada
+    if sabor == "CP":  # Cupuaçu
+        if tamanho == "P":
+            preco = 9
+        elif tamanho == "M":
+            preco = 14
+        else:  # tamanho == "G"
+            preco = 18
+    elif sabor == "AC":  # Açaí
+        if tamanho == "P":
+            preco = 11
+        elif tamanho == "M":
+            preco = 16
+        else:  # tamanho == "G"
+            preco = 20
+
+    # Soma o valor ao total acumulado
+    total_pedido += preco
+
+    # Mensagem de confirmação do pedido
+    print(f"Você pediu um {sabor} tamanho {tamanho}. Valor: R$ {preco:.2f}\n")
+
+    # Pergunta se o usuário deseja continuar
+    mais_pedido = input("Deseja pedir mais alguma coisa? (S/N): ").upper()
+
+    # Validação da resposta
+    if mais_pedido == "N":
+        # Encerra o loop com break
+        break
+    elif mais_pedido != "S":
+        # Se a resposta não for válida, continua perguntando
+        print("Resposta inválida. Continuando para novo pedido...\n")
+        continue  # Aplica continue como exigido
+
+# Exibe o valor total acumulado
+print(f"\nObrigado pela sua compra! Total do pedido: R$ {total_pedido:.2f}")
