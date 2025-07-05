@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Sistema de Pedidos - Açaí e Cupuaçu</title>
+  <meta charset="UTF-8" />
+  <title>Loja de Açaí e Cupuaçu</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f5f5f5;
+      background-color: #f2f2f2;
       padding: 20px;
     }
     h1 {
       color: #6a1b9a;
     }
     select, button {
-      font-size: 16px;
+      width: 300px;
       padding: 10px;
       margin: 10px 0;
-      width: 300px;
+      font-size: 16px;
     }
     .mensagem {
       margin-top: 20px;
-      background: #e0ffe0;
+      background-color: #e0ffe0;
       padding: 10px;
       border-radius: 5px;
       white-space: pre-line;
@@ -28,7 +28,7 @@
     footer {
       margin-top: 40px;
       font-size: 14px;
-      color: #555;
+      color: #666;
     }
   </style>
 </head>
@@ -37,7 +37,7 @@
   <h1>Bem-vindo ao sistema de pedidos da loja de Açaí e Cupuaçu!</h1>
 
   <label for="sabor">Escolha o sabor:</label><br>
-  <select id="sabor" onchange="atualizarTamanhos()">
+  <select id="sabor" onchange="carregarTamanhos()">
     <option value="">-- Selecione --</option>
     <option value="acai">Açaí</option>
     <option value="cupuacu">Cupuaçu</option>
@@ -45,7 +45,7 @@
 
   <label for="tamanho">Escolha o tamanho:</label><br>
   <select id="tamanho" disabled>
-    <option>-- Selecione o sabor primeiro --</option>
+    <option value="">-- Selecione o sabor primeiro --</option>
   </select><br>
 
   <button onclick="adicionarPedido()">Adicionar ao pedido</button>
@@ -57,35 +57,36 @@
   </footer>
 
   <script>
-    const sabores = {
+    const precos = {
       acai: { P: 9, M: 14, G: 18 },
       cupuacu: { P: 11, M: 16, G: 20 }
     };
 
     let pedidos = [];
 
-    function atualizarTamanhos() {
+    function carregarTamanhos() {
       const sabor = document.getElementById('sabor').value;
-      const selectTamanho = document.getElementById('tamanho');
-      selectTamanho.innerHTML = '';
-      
+      const tamanhoSelect = document.getElementById('tamanho');
+
+      tamanhoSelect.innerHTML = '';
+
       if (!sabor) {
-        selectTamanho.disabled = true;
+        tamanhoSelect.disabled = true;
         const opt = document.createElement('option');
-        opt.text = '-- Selecione o sabor primeiro --';
-        selectTamanho.add(opt);
+        opt.textContent = '-- Selecione o sabor primeiro --';
+        opt.value = '';
+        tamanhoSelect.appendChild(opt);
         return;
       }
 
-      const opcoes = sabores[sabor];
-      for (let tamanho in opcoes) {
-        const opt = document.createElement('option');
-        opt.value = tamanho;
-        opt.text = `${tamanho} - R$ ${opcoes[tamanho].toFixed(2)}`;
-        selectTamanho.add(opt);
+      for (let tamanho in precos[sabor]) {
+        const option = document.createElement('option');
+        option.value = tamanho;
+        option.textContent = `${tamanho} - R$ ${precos[sabor][tamanho].toFixed(2)}`;
+        tamanhoSelect.appendChild(option);
       }
 
-      selectTamanho.disabled = false;
+      tamanhoSelect.disabled = false;
     }
 
     function adicionarPedido() {
@@ -93,4 +94,23 @@
       const tamanho = document.getElementById('tamanho').value;
 
       if (!sabor || !tamanho) {
-        alert('Por favor, selecione um sabor e um ta
+        alert('Por favor, selecione um sabor e um tamanho.');
+        return;
+      }
+
+      const valor = precos[sabor][tamanho];
+      pedidos.push({ sabor, tamanho, valor });
+
+      let texto = pedidos.map((p, i) =>
+        `Pedido ${i + 1}: sabor ${p.sabor}, tamanho ${p.tamanho}, valor R$ ${p.valor.toFixed(2)}`
+      ).join('\n');
+
+      const total = pedidos.reduce((soma, p) => soma + p.valor, 0);
+      texto += `\n\nTotal: R$ ${total.toFixed(2)}`;
+
+      document.getElementById('mensagem').innerText = texto;
+    }
+  </script>
+
+</body>
+</html>
