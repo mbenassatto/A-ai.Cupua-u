@@ -1,30 +1,29 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Sistema de Pedidos - Açaí e Cupuaçu</title>
   <style>
     body {
       font-family: Arial, sans-serif;
+      background: #f5f5f5;
       padding: 20px;
-      background-color: #f8f8f8;
     }
     h1 {
-      color: #6a0dad;
+      color: #6a1b9a;
     }
     select, button {
+      font-size: 16px;
       padding: 10px;
       margin: 10px 0;
-      width: 100%;
-      max-width: 300px;
-      font-size: 16px;
+      width: 300px;
     }
-    .resultado {
+    .mensagem {
       margin-top: 20px;
-      font-weight: bold;
-      background-color: #e0ffe0;
+      background: #e0ffe0;
       padding: 10px;
       border-radius: 5px;
+      white-space: pre-line;
     }
     footer {
       margin-top: 40px;
@@ -37,21 +36,21 @@
 
   <h1>Bem-vindo ao sistema de pedidos da loja de Açaí e Cupuaçu!</h1>
 
-  <label for="sabor">Escolha o sabor:</label>
-  <select id="sabor" onchange="habilitarTamanho()">
+  <label for="sabor">Escolha o sabor:</label><br>
+  <select id="sabor" onchange="atualizarTamanhos()">
     <option value="">-- Selecione --</option>
     <option value="acai">Açaí</option>
     <option value="cupuacu">Cupuaçu</option>
-  </select>
+  </select><br>
 
-  <label for="tamanho">Escolha o tamanho:</label>
+  <label for="tamanho">Escolha o tamanho:</label><br>
   <select id="tamanho" disabled>
-    <option value="">-- Selecione o sabor primeiro --</option>
-  </select>
+    <option>-- Selecione o sabor primeiro --</option>
+  </select><br>
 
   <button onclick="adicionarPedido()">Adicionar ao pedido</button>
 
-  <div class="resultado" id="mensagem"></div>
+  <div class="mensagem" id="mensagem"></div>
 
   <footer>
     Site desenvolvido por Miguel Stenke.
@@ -59,53 +58,39 @@
 
   <script>
     const sabores = {
-      acai: { P: 9.00, M: 14.00, G: 18.00 },
-      cupuacu: { P: 11.00, M: 16.00, G: 20.00 }
+      acai: { P: 9, M: 14, G: 18 },
+      cupuacu: { P: 11, M: 16, G: 20 }
     };
 
     let pedidos = [];
 
-    function habilitarTamanho() {
-      const saborSelecionado = document.getElementById("sabor").value;
-      const selectTamanho = document.getElementById("tamanho");
-
-      selectTamanho.innerHTML = "";
-
-      if (saborSelecionado) {
-        const opcoes = Object.keys(sabores[saborSelecionado]);
-        selectTamanho.disabled = false;
-
-        const optionDefault = document.createElement("option");
-        optionDefault.value = "";
-        optionDefault.textContent = "-- Selecione --";
-        selectTamanho.appendChild(optionDefault);
-
-        opcoes.forEach(tam => {
-          const opt = document.createElement("option");
-          opt.value = tam;
-          opt.textContent = `${tam} - R$ ${sabores[saborSelecionado][tam].toFixed(2)}`;
-          selectTamanho.appendChild(opt);
-        });
-      } else {
+    function atualizarTamanhos() {
+      const sabor = document.getElementById('sabor').value;
+      const selectTamanho = document.getElementById('tamanho');
+      selectTamanho.innerHTML = '';
+      
+      if (!sabor) {
         selectTamanho.disabled = true;
-        const opt = document.createElement("option");
-        opt.textContent = "-- Selecione o sabor primeiro --";
-        selectTamanho.appendChild(opt);
-      }
-    }
-
-    function adicionarPedido() {
-      const sabor = document.getElementById("sabor").value;
-      const tamanho = document.getElementById("tamanho").value;
-
-      if (!sabor || !tamanho) {
-        alert("Por favor, selecione sabor e tamanho.");
+        const opt = document.createElement('option');
+        opt.text = '-- Selecione o sabor primeiro --';
+        selectTamanho.add(opt);
         return;
       }
 
-      const preco = sabores[sabor][tamanho];
-      pedidos.push({ sabor, tamanho, preco });
+      const opcoes = sabores[sabor];
+      for (let tamanho in opcoes) {
+        const opt = document.createElement('option');
+        opt.value = tamanho;
+        opt.text = `${tamanho} - R$ ${opcoes[tamanho].toFixed(2)}`;
+        selectTamanho.add(opt);
+      }
 
-      const total = pedidos.reduce((soma, item) => soma + item.preco, 0);
+      selectTamanho.disabled = false;
+    }
 
-      const msg = `Você pediu ${pedidos.length} produto(s):\n` +
+    function adicionarPedido() {
+      const sabor = document.getElementById('sabor').value;
+      const tamanho = document.getElementById('tamanho').value;
+
+      if (!sabor || !tamanho) {
+        alert('Por favor, selecione um sabor e um ta
