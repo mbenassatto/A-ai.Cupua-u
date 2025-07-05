@@ -1,63 +1,111 @@
-# CÓDIGO DE ENTRADA 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sistema de Pedidos - Açaí e Cupuaçu</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f8f8f8;
+    }
+    h1 {
+      color: #6a0dad;
+    }
+    select, button {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      max-width: 300px;
+      font-size: 16px;
+    }
+    .resultado {
+      margin-top: 20px;
+      font-weight: bold;
+      background-color: #e0ffe0;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
 
-# Mensagem de boas-vindas
-print("Bem-vindo ao sistema de pedidos da loja de Açaí e Cupuaçu!")
-print("Desenvolvido por Miguel Stenke Ramos Benassatto\n")
+  <h1>Bem-vindo ao sistema de pedidos da loja de Açaí e Cupuaçu!</h1>
 
-# Variável acumuladora do valor total dos pedidos
-total_pedido = 0
+  <label for="sabor">Escolha o sabor:</label>
+  <select id="sabor" onchange="habilitarTamanho()">
+    <option value="">-- Selecione --</option>
+    <option value="acai">Açaí</option>
+    <option value="cupuacu">Cupuaçu</option>
+  </select>
 
-# Início do loop principal de pedidos
-while True:
-    # Input do sabor
-    sabor = input("Escolha o sabor (CP para Cupuaçu / AC para Açaí): ").upper()
+  <label for="tamanho">Escolha o tamanho:</label>
+  <select id="tamanho" disabled>
+    <option value="">-- Selecione o sabor primeiro --</option>
+  </select>
 
-    # Validação do sabor
-    if sabor != "CP" and sabor != "AC":
-        print("Sabor inválido. Tente novamente.\n")
-        continue  # Continua para reiniciar a solicitação do sabor
+  <button onclick="adicionarPedido()">Adicionar ao pedido</button>
 
-    # Input do tamanho
-    tamanho = input("Escolha o tamanho (P / M / G): ").upper()
+  <div class="resultado" id="mensagem"></div>
 
-    # Validação do tamanho
-    if tamanho != "P" and tamanho != "M" and tamanho != "G":
-        print("Tamanho inválido. Tente novamente.\n")
-        continue  # Continua para reiniciar a solicitação do tamanho
+  <footer>
+    Site desenvolvido por Miguel Stenke.
+  </footer>
 
-    # Determinação do preço com estrutura aninhada
-    if sabor == "CP":  # Cupuaçu
-        if tamanho == "P":
-            preco = 9
-        elif tamanho == "M":
-            preco = 14
-        else:  # tamanho == "G"
-            preco = 18
-    elif sabor == "AC":  # Açaí
-        if tamanho == "P":
-            preco = 11
-        elif tamanho == "M":
-            preco = 16
-        else:  # tamanho == "G"
-            preco = 20
+  <script>
+    const sabores = {
+      acai: { P: 9.00, M: 14.00, G: 18.00 },
+      cupuacu: { P: 11.00, M: 16.00, G: 20.00 }
+    };
 
-    # Soma o valor ao total acumulado
-    total_pedido += preco
+    let pedidos = [];
 
-    # Mensagem de confirmação do pedido
-    print(f"Você pediu um {sabor} tamanho {tamanho}. Valor: R$ {preco:.2f}\n")
+    function habilitarTamanho() {
+      const saborSelecionado = document.getElementById("sabor").value;
+      const selectTamanho = document.getElementById("tamanho");
 
-    # Pergunta se o usuário deseja continuar
-    mais_pedido = input("Deseja pedir mais alguma coisa? (S/N): ").upper()
+      selectTamanho.innerHTML = "";
 
-    # Validação da resposta
-    if mais_pedido == "N":
-        # Encerra o loop com break
-        break
-    elif mais_pedido != "S":
-        # Se a resposta não for válida, continua perguntando
-        print("Resposta inválida. Continuando para novo pedido...\n")
-        continue  # Aplica continue como exigido
+      if (saborSelecionado) {
+        const opcoes = Object.keys(sabores[saborSelecionado]);
+        selectTamanho.disabled = false;
 
-# Exibe o valor total acumulado
-print(f"\nObrigado pela sua compra! Total do pedido: R$ {total_pedido:.2f}")
+        const optionDefault = document.createElement("option");
+        optionDefault.value = "";
+        optionDefault.textContent = "-- Selecione --";
+        selectTamanho.appendChild(optionDefault);
+
+        opcoes.forEach(tam => {
+          const opt = document.createElement("option");
+          opt.value = tam;
+          opt.textContent = `${tam} - R$ ${sabores[saborSelecionado][tam].toFixed(2)}`;
+          selectTamanho.appendChild(opt);
+        });
+      } else {
+        selectTamanho.disabled = true;
+        const opt = document.createElement("option");
+        opt.textContent = "-- Selecione o sabor primeiro --";
+        selectTamanho.appendChild(opt);
+      }
+    }
+
+    function adicionarPedido() {
+      const sabor = document.getElementById("sabor").value;
+      const tamanho = document.getElementById("tamanho").value;
+
+      if (!sabor || !tamanho) {
+        alert("Por favor, selecione sabor e tamanho.");
+        return;
+      }
+
+      const preco = sabores[sabor][tamanho];
+      pedidos.push({ sabor, tamanho, preco });
+
+      const total = pedidos.reduce((soma, item) => soma + item.preco, 0);
+
+      const msg = `Você pediu ${pedidos.length} produto(s):\n` +
